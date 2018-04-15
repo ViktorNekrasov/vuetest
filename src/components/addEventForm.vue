@@ -58,6 +58,8 @@ export default {
 
             this.$store.commit('addEvent', this.eventMap);
             this.$store.commit('addMarker', this.eventMap);
+            this.$store.commit('refreshMarkers');
+            
             this.$store.state.controls.eventAddForm = false;
             this.$store.state.controls.eventList = true;
         }

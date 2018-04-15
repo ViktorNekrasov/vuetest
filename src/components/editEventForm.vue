@@ -33,7 +33,7 @@
                        @input="newEventMap.position.longitude = $event.target.value"
                        :value="eventMap.position.longitude">
             </div>
-            <button @click="editEvent">Добавить</button>
+            <button @click="editEvent">Изменить</button>
         </form>
     </div>
 </template>
@@ -71,7 +71,8 @@ export default {
             this.newEventMap.infoMarker.dateEnd = this.newEventMap.infoMarker.dateEnd.split('T').join(' ');
 
             this.$store.state.arrayEvents[this.$store.state.controls.indexEventToChange] = this.newEventMap;
-            this.$store.commit('addMarker', this.newEventMap);
+            this.$store.commit('editMarker');
+            this.$store.commit('refreshMarkers');
 
             this.$store.state.controls.eventList = true;
             this.$store.state.controls.eventEditForm = false;
@@ -91,14 +92,6 @@ export default {
         margin: 50px auto;
         max-width: 80%;
     }
-        .sidebar__newEvent__goBack {
-            font-size: 18px;
-            font-weight: bold;
-        }
-            .sidebar__newEvent__goBack:hover {
-                cursor: pointer;
-                color: #3eb5f1;
-            }
         .sidebar__newEvent__item {
             margin-top: 15px;
         }
@@ -137,4 +130,13 @@ export default {
                 -moz-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.5);
                 box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.5);
             }
+    .sidebar__newEvent__goBack {
+        font-size: 18px;
+        font-weight: bold;
+    }
+        .sidebar__newEvent__goBack:hover {
+            cursor: pointer;
+            color: #3eb5f1;
+        }
+    
 </style>

@@ -1,23 +1,30 @@
 <template>
-        <div class="sidebar__listEvent" v-show="!this.$store.state.controls.eventEditForm">
-            <div class="sidebar__listEvent__item sidebar__listEvent__item--title">
-                <div class="sidebar__listEvent__item__number">&#8470;</div>
-                <div class="sidebar__listEvent__item__name">Название события</div>
-                <div class="sidebar__listEvent__item__edit">Ред.</div>
-                <div class="sidebar__listEvent__item__delete">Удл.</div>
-            </div>
-            <div class="sidebar__listEvent__item" v-for="(marker, index) in printArray">
-                <div class="sidebar__listEvent__item__number">{{index + 1}}</div>
-                <div class="sidebar__listEvent__item__name">{{ marker.infoMarker.nameEvent }}</div>
-                <div class="sidebar__listEvent__item__edit"
-                     @click="editFormShow(index)"
-                >&#9998;</div>
-                <div class="sidebar__listEvent__item__delete">&#215;</div>
-            </div>
+    <div class="sidebar__listEvent" v-show="!this.$store.state.controls.eventEditForm">
+        <div class="sidebar__listEvent__item sidebar__listEvent__item--title">
+            <div class="sidebar__listEvent__item__number">&#8470;</div>
+            <div class="sidebar__listEvent__item__name">Название события</div>
+            <div class="sidebar__listEvent__item__edit">Ред.</div>
+            <div class="sidebar__listEvent__item__delete">Удл.</div>
         </div>
+        <div class="sidebar__listEvent__item" v-for="(marker, index) in printArray">
+            <div class="sidebar__listEvent__item__number">{{index + 1}}</div>
+            <div class="sidebar__listEvent__item__name">{{ marker.infoMarker.nameEvent }}</div>
+            <div class="sidebar__listEvent__item__edit"
+                 @click="editFormShow(index)"
+            >&#9998;</div>
+            <div class="sidebar__listEvent__item__delete"
+                 @click="deleteModalShow(index)"
+            >&#215;</div>
+        </div>
+
+        <delete-modal v-if="this.$store.state.controls.deleteModal"></delete-modal>
+        
+    </div>
 </template>
 
 <script>
+
+import deleteModal from './deleteModal.vue'
 
 export default {
     data() {
@@ -26,13 +33,17 @@ export default {
         }
     },
     components: {
-        
+        deleteModal
     },
     methods: {
         editFormShow(index) {
             this.$store.state.controls.indexEventToChange = index;
             this.$store.state.controls.eventEditForm = true;
             this.$store.state.controls.eventList = false; 
+        },
+        deleteModalShow(index) {
+            this.$store.state.controls.indexEventToDelete = index;
+            this.$store.state.controls.deleteModal = true;
         }
     },
     computed: {

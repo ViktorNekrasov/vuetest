@@ -24,7 +24,7 @@ import editEventForm from './editEventForm.vue'
 export default {
     data() {
         return {
-            addEventFormShow : false
+            
         }
     },
     components: {

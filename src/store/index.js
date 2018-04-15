@@ -3,6 +3,12 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
+
+import VueResource from 'vue-resource';
+Vue.use(VueResource);
+//Vue.http.options.root = "http://localhost/";
+
+
 export const store = new Vuex.Store({
 	state: {
 		map: "",
@@ -10,7 +16,9 @@ export const store = new Vuex.Store({
 			eventAddForm : false,
 			eventList : true,
 			eventEditForm : false,
-			indexEventToChange : 0
+			deleteModal : false,
+			indexEventToChange : null,
+			indexEventToDelete : null
 		},
 		arrayEvents: [],
 		markers: []
@@ -31,10 +39,6 @@ export const store = new Vuex.Store({
             });
 		},
 		addMarker(state, marker){
-			var dateStart = +new Date(marker.infoMarker.dateStart);
-            var dateEnd = +new Date(marker.infoMarker.dateEnd);
-            var dateNow = +new Date();
-
             const position = new google.maps.LatLng(marker.position.latitude, marker.position.longitude)
             var tempMarker = {
             	title : marker.infoMarker.nameEvent,
@@ -46,36 +50,53 @@ export const store = new Vuex.Store({
             }
             tempMarker.map = state.map;
             tempMarker.position = position;
+            var markerG = new google.maps.Marker(tempMarker);
+            state.markers.push(markerG);
 
-            if ((dateNow > dateStart && dateNow < dateEnd) || (dateNow < dateStart && dateNow < dateEnd)) {
 
-	            var markerG = new google.maps.Marker(tempMarker);
+            var infoWindow;
+            var strInfo = '<p><b>Название: </b>'+ markerG.infoMarker.nameEvent +'</p>' + 
+		                  '<p><b>Дата начала: </b>'+ markerG.infoMarker.dateStart +'</p>' +
+		                  '<p><b>Дата окончания: </b>'+ markerG.infoMarker.dateEnd +'</p>';
 
-	            for (var i = 0; i < state.markers.length; i++)
-		        	if (state.markers[i] == markerG) {
-		        		state.markers[i].setMap(null);
-	            		state.markers.push(markerG);
-		        	}
-
-	            var infoWindow;
-	            var strInfo = '<p><b>Название: </b>'+ markerG.infoMarker.nameEvent +'</p>' + 
-			                  '<p><b>Дата начала: </b>'+ markerG.infoMarker.dateStart +'</p>' +
-			                  '<p><b>Дата окончания: </b>'+ markerG.infoMarker.dateEnd +'</p>';
-
-	            google.maps.event.addListener(markerG, "click", function() {
-	                if (infoWindow)
-	                    infoWindow.close();
-	                infoWindow = new google.maps.InfoWindow({
-	                    content: strInfo
-	                });
-	                infoWindow.open(this.map, markerG);
-	            });
+            google.maps.event.addListener(markerG, "click", function() {
+                if (infoWindow)
+                    infoWindow.close();
+                infoWindow = new google.maps.InfoWindow({
+                    content: strInfo
+                });
+                infoWindow.open(this.map, markerG);
+            });
+		},
+		editMarker(state){
+			for (var i = 0; i < state.markers.length; i++) {
+            	state.markers[i].setMap(null);
 	        }
-	        else return;
+	        state.markers = [];
+
+	        for (var i = 0; i < state.arrayEvents.length; i++) {
+	        	store.commit('addMarker',state.arrayEvents[i]);
+	        }
 		},
 		addMap(state, newMap) {
 			state.map = newMap;
-		}
+		},
+		refreshMarkers(state) {
+			for (var i = 0; i < state.markers.length; i++) {
+				var dateStart = +new Date(state.markers[i].infoMarker.dateStart);
+	            var dateEnd = +new Date(state.markers[i].infoMarker.dateEnd);
+	            var dateNow = +new Date();
+
+	            if (dateNow > dateStart && dateNow > dateEnd) {
+	            	state.markers[i].setMap(null);
+	            }
+	        }
+        },
+        deleteEvent(state) {
+        	state.arrayEvents.splice(state.controls.indexEventToDelete, 1);
+        	state.markers[state.controls.indexEventToDelete].setMap(null);
+        	state.markers.splice(state.controls.indexEventToDelete, 1);
+        }
 	}
 
 });
