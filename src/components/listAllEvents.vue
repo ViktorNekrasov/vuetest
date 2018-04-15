@@ -3,12 +3,14 @@
         <div class="sidebar__listEvent__item sidebar__listEvent__item--title">
             <div class="sidebar__listEvent__item__number">&#8470;</div>
             <div class="sidebar__listEvent__item__name">Название события</div>
+            <div class="sidebar__listEvent__item__status">Статус</div>
             <div class="sidebar__listEvent__item__edit">Ред.</div>
             <div class="sidebar__listEvent__item__delete">Удл.</div>
         </div>
         <div class="sidebar__listEvent__item" v-for="(marker, index) in printArray">
             <div class="sidebar__listEvent__item__number">{{index + 1}}</div>
             <div class="sidebar__listEvent__item__name">{{ marker.infoMarker.nameEvent }}</div>
+            <div class="sidebar__listEvent__item__status">{{ printStatus(marker) }}</div>
             <div class="sidebar__listEvent__item__edit"
                  @click="editFormShow(index)"
             >&#9998;</div>
@@ -44,6 +46,16 @@ export default {
         deleteModalShow(index) {
             this.$store.state.controls.indexEventToDelete = index;
             this.$store.state.controls.deleteModal = true;
+        },
+        printStatus(marker) {
+            var dateStart = +new Date(marker.infoMarker.dateStart);
+            var dateEnd = +new Date(marker.infoMarker.dateEnd);
+            var dateNow = +new Date();
+
+            if (dateNow > dateStart && dateNow > dateEnd) {
+                return "done";
+            }
+            else return "active";
         }
     },
     computed: {
@@ -92,14 +104,18 @@ export default {
                 font-size: 16px;
             }
             .sidebar__listEvent__item__name {
-                flex-basis: 60%;
+                flex-basis: 50%;
                 box-sizing: border-box;
                 padding: 0px 5px;
                 font-size: 16px;
             }
+            .sidebar__listEvent__item__status {
+                flex-basis: 20%;
+                font-size: 16px;
+            }
             .sidebar__listEvent__item__edit {
                 font-size: 14px;
-                flex-basis: 15%;
+                flex-basis: 10%;
                 text-align: center;
             }
                 .sidebar__listEvent__item__edit:hover {
@@ -108,7 +124,7 @@ export default {
                 }
             .sidebar__listEvent__item__delete {
                 font-size: 15px;
-                flex-basis: 15%;
+                flex-basis: 10%;
                 text-align: center;
             }
                 .sidebar__listEvent__item__delete:hover {
